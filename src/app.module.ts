@@ -1,27 +1,46 @@
+import { HttpModule, HttpService } from '@nestjs/axios';
+import { ConfigModule } from '@nestjs/config';
+import * as Joi from 'joi';
+
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CategoriesController } from './controllers/categories.controller';
-import { UsersController } from './controllers/users.controller';
-import { OrdersController } from './controllers/orders.controller';
-import { CustomersController } from './controllers/customers.controller';
-import { BrandsController } from './controllers/brands.controller';
-import { ProductsService } from './services/products.service';
-import { ProductsController } from './controllers/products.controller';
-import { BrandService } from './services/brand.service';
-import { CategoriesService } from './services/categories.service';
+import { UsersModule } from './users/users.module';
+import { ProductsModule } from './products/products.module';
+import { DatabaseModule } from './database/database.module';
+import { enviroments } from './enviroments';
+import config from './config';
 
 @Module({
-  imports: [],
-  controllers: [
-    AppController,
-    CategoriesController,
-    UsersController,
-    OrdersController,
-    CustomersController,
-    BrandsController,
-    ProductsController,
+  imports: [
+    UsersModule,
+    ProductsModule,
+    HttpModule,
+    DatabaseModule,
+    ConfigModule.forRoot({
+      envFilePath: enviroments[process.env.NODE_ENV] || '.env',
+      load: [config],
+      isGlobal: true,
+      validationSchema: Joi.object({
+        API_KEY: Joi.number().required(),
+        DATABASE_NAME: Joi.string().required(),
+        DATABASE_PORT: Joi.number().required(),
+      }),
+    }),
   ],
-  providers: [AppService, ProductsService, BrandService, CategoriesService],
+  controllers: [AppController],
+  providers: [
+    AppService,
+    {
+      provide: 'TASKS',
+      useFactory: async (http: HttpService) => {
+        const task = await http
+          .get(`https://jsonplaceholder.typicode.com/todos/`)
+          .toPromise();
+        return task.data;
+      },
+      inject: [HttpService],
+    },
+  ],
 })
 export class AppModule {}
