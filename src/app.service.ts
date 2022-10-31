@@ -14,14 +14,8 @@ export class AppService {
     @Inject(config.KEY) private configService: ConfigType<typeof config>,
   ) {}
   getHello(): string {
-    const apiKey = this.configService.apiKey;
-    const dbName = this.configService.postgres.dbName;
-    const dbPort = this.configService.postgres.dbPort;
     return `
     Hello World!
-    apikey: ${apiKey}
-    dbName: ${dbName}
-    dbPort: ${dbPort}
     `;
   }
 
