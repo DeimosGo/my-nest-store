@@ -20,7 +20,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Deimos Store')
     .setDescription('NEST APIs PROJECT')
-    .setVersion('1.0')
+    .setVersion('1.3')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
