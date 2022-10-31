@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  /* Query, */
   Param,
   Post,
   Body,
@@ -9,11 +8,15 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
-  /* ParseIntPipe, */
+  Query,
 } from '@nestjs/common';
 import { ParseIntPipe } from '../../common/parse-int.pipe';
 import { ProductsService } from '../services/products.service';
-import { CreateProductDto, UpdateProductDto } from '../dtos/products.dto';
+import {
+  CreateProductDto,
+  FilterProductsDto,
+  UpdateProductDto,
+} from '../dtos/products.dto';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
 @ApiTags('products')
@@ -23,21 +26,8 @@ export class ProductsController {
 
   @ApiOperation({ summary: 'Products List' })
   @Get()
-  get() {
-    /*
-  @Get()
-  get(
-    @Query('limit') limit = 100,
-    @Query('offset') offset = 0,
-    @Query('brand') brand: string,
-  ) {
-    const { limit, offset } = params;
-    return {
-      limit,
-      offset,
-      brand,
-    }; */
-    return this.productsService.findAll();
+  get(@Query() params: FilterProductsDto) {
+    return this.productsService.findAll(params);
   }
 
   @Get('filter')
@@ -64,6 +54,25 @@ export class ProductsController {
     @Body() payload: UpdateProductDto,
   ) {
     return this.productsService.update(productId, payload);
+  }
+
+  @Put(':productId/category/:categoryId')
+  addCategoryFromProduct(
+    @Param('productId', ParseIntPipe) productId: number,
+    @Param('categoryId', ParseIntPipe) categoryId: number,
+  ) {
+    return this.productsService.addCategoryFromProduct(productId, categoryId);
+  }
+
+  @Delete(':productId/category/:categoryId')
+  removeCategoryFromProduct(
+    @Param('productId', ParseIntPipe) productId: number,
+    @Param('categoryId', ParseIntPipe) categoryId: number,
+  ) {
+    return this.productsService.removeCategoryFromProduct(
+      productId,
+      categoryId,
+    );
   }
 
   @Delete(':productId')

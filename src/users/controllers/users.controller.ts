@@ -27,17 +27,17 @@ export class UsersController {
     return this.userService.getById(userId);
   }
 
-  @Get(':userId/orders')
+  /*  @Get(':userId/orders')
   getOrders(@Param('userId', ParseIntPipe) userId: number) {
     return this.userService.getOrdersByUser(userId);
-  }
+  } */
 
   @Post()
   create(@Body() payload: CreateUserDto) {
     return this.userService.create(payload);
   }
 
-  @Put()
+  @Put(':userId')
   update(
     @Param('userId', ParseIntPipe) userId: number,
     @Body() payload: UpdateUserDto,
